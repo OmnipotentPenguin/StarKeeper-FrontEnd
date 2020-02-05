@@ -4,26 +4,15 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '5'))
     }
     stages {
-        stage('---clean---') {
+        stage('--build--') {
             steps {
-                sh "mvn clean"
+                sh "docker build -t omnipotentpenguin/starkeeper-dev-frontend ."
             }
         }
-        stage('--package--') {
-            steps {
-                sh "mvn package"
-                sh "docker build -t omnipotentpenguin/starkeeper-dev ."
-            }
-        }
-        stage('--deploy--') {
-            steps {
-                sh "mvn deploy"
-            }
-        }
-        stage('--publishToDocker--') {
+        stage('--push--') {
             steps {
                 withDockerRegistry([ credentialsId: "dockerhub-adam", url: "" ]){
-                    sh "docker push omnipotentpenguin/starkeeper-dev:latest"
+                    sh "docker push omnipotentpenguin/starkeeper-dev-frontend:latest"
                 }
             }
         }        
